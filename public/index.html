@@ -297,7 +297,7 @@
 
         const data = await response.json();
         if (!response.ok) {
-          throw new Error(data.detail || "Failed to predict.");
+          throw new Error(data.error || data.detail || "Failed to predict.");
         }
 
         tickerEl.textContent = `${data.symbol} (${data.fetched_ticker})`;

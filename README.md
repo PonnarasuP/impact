@@ -64,6 +64,40 @@ The app will open at **http://localhost:8501** in your browser.
 
 ---
 
+## Deploy to Vercel
+
+This repository now includes a Vercel-compatible app:
+- `public/index.html` (web UI)
+- `api/predict.py` (Python prediction API)
+- `api/health.py` (health endpoint)
+
+### Steps
+
+1. Install Vercel CLI:
+
+```bash
+npm i -g vercel
+```
+
+2. Login and deploy from this folder:
+
+```bash
+vercel
+```
+
+3. For production deployment:
+
+```bash
+vercel --prod
+```
+
+### Notes
+- Streamlit itself is not directly hosted on Vercel.
+- The Vercel deployment uses the same prediction logic via Python serverless functions.
+- API endpoint after deploy: `/api/predict`
+
+---
+
 ## Troubleshooting
 
 ### Error: "Prophet not installed"
