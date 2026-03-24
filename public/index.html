@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Stock Predictor</title>
+  <style>
+    :root {
+      --bg: #f3efe6;
+      --card: #fffaf0;
+      --ink: #1a1f2b;
+      --muted: #5f6573;
+      --accent: #0f766e;
+      --accent-2: #d97706;
+      --up: #15803d;
+      --down: #b91c1c;
+      --ring: rgba(15, 118, 110, 0.2);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 10% 10%, #ffe9c9 0%, transparent 35%),
+        radial-gradient(circle at 90% 20%, #d8f6f1 0%, transparent 35%),
+        var(--bg);
+      min-height: 100vh;
+    }
+
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 28px 18px 36px;
+      animation: rise 500ms ease-out;
+    }
+
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(1.8rem, 3vw, 2.6rem);
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .subtitle {
+      margin-top: 8px;
+      color: var(--muted);
+    }
+
+    .grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 14px;
+    }
+
+    .card {
+      grid-column: span 12;
+      background: var(--card);
+      border: 1px solid #e4dccd;
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: 0 14px 30px rgba(26, 31, 43, 0.06);
+    }
+
+    .form {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 10px;
+    }
+
+    .field {
+      grid-column: span 12;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field.half { grid-column: span 6; }
+    .field.third { grid-column: span 4; }
+
+    label {
+      font-size: 0.86rem;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    input, select, button {
+      border-radius: 10px;
+      border: 1px solid #d6cfbf;
+      padding: 10px 12px;
+      font-size: 0.96rem;
+      background: #fff;
+      color: var(--ink);
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px var(--ring);
+    }
+
+    button {
+      cursor: pointer;
+      border: none;
+      background: linear-gradient(135deg, var(--accent), #115e59);
+      color: #fff;
+      font-weight: 700;
+      transition: transform 120ms ease, filter 120ms ease;
+    }
+
+    button:hover { transform: translateY(-1px); filter: brightness(1.03); }
+
+    .result {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .metric {
+      grid-column: span 6;
+      border-radius: 12px;
+      border: 1px solid #e4dccd;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .metric small { color: var(--muted); }
+    .metric p { margin: 6px 0 0; font-size: 1.2rem; font-weight: 700; }
+
+    .up { color: var(--up); }
+    .down { color: var(--down); }
+
+    .status {
+      margin-top: 10px;
+      min-height: 22px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .pill {
+      display: inline-block;
+      background: #efe7d8;
+      border: 1px solid #e3dac8;
+      border-radius: 999px;
+      padding: 5px 10px;
+      font-size: 0.78rem;
+      margin-right: 6px;
+      margin-bottom: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    @media (max-width: 800px) {
+      .field.half, .field.third, .metric { grid-column: span 12; }
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <h1 class="title">Stock Predictor</h1>
+    <p class="subtitle">Vercel-ready stock prediction app (Linear Regression model).</p>
+
+    <section class="grid">
+      <article class="card">
+        <form id="predict-form" class="form">
+          <div class="field half">
+            <label for="symbol">Symbol</label>
+            <input id="symbol" value="AAPL" maxlength="20" required />
+          </div>
+
+          <div class="field half">
+            <label for="exchange">Exchange</label>
+            <select id="exchange">
+              <option value="US">US (NYSE/NASDAQ)</option>
+              <option value="NSE">India - NSE</option>
+              <option value="BSE">India - BSE</option>
+            </select>
+          </div>
+
+          <div class="field third">
+            <label for="period">History</label>
+            <select id="period">
+              <option value="3mo">3 Months</option>
+              <option value="6mo">6 Months</option>
+              <option value="1y" selected>1 Year</option>
+              <option value="2y">2 Years</option>
+              <option value="5y">5 Years</option>
+            </select>
+          </div>
+
+          <div class="field third">
+            <label for="days">Days Ahead</label>
+            <input id="days" type="number" value="1" min="1" max="30" required />
+          </div>
+
+          <div class="field third" style="justify-content:flex-end;">
+            <label>&nbsp;</label>
+            <button type="submit">Predict</button>
+          </div>
+        </form>
+
+        <div style="margin-top:10px;">
+          <span class="pill" data-symbol="RELIANCE" data-exchange="NSE">RELIANCE</span>
+          <span class="pill" data-symbol="TCS" data-exchange="NSE">TCS</span>
+          <span class="pill" data-symbol="INFY" data-exchange="NSE">INFY</span>
+          <span class="pill" data-symbol="AAPL" data-exchange="US">AAPL</span>
+          <span class="pill" data-symbol="MSFT" data-exchange="US">MSFT</span>
+          <span class="pill" data-symbol="NVDA" data-exchange="US">NVDA</span>
+        </div>
+
+        <div class="status" id="status">Ready.</div>
+
+        <div class="result" id="result" hidden>
+          <div class="metric">
+            <small>Ticker</small>
+            <p id="ticker"></p>
+          </div>
+          <div class="metric">
+            <small>Currency</small>
+            <p id="currency"></p>
+          </div>
+          <div class="metric">
+            <small>Last Close</small>
+            <p id="last-close"></p>
+          </div>
+          <div class="metric">
+            <small>Predicted Close</small>
+            <p id="predicted"></p>
+          </div>
+          <div class="metric" style="grid-column: span 12;">
+            <small>Change</small>
+            <p id="change"></p>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById("predict-form");
+    const statusEl = document.getElementById("status");
+    const resultEl = document.getElementById("result");
+
+    const symbolEl = document.getElementById("symbol");
+    const exchangeEl = document.getElementById("exchange");
+    const periodEl = document.getElementById("period");
+    const daysEl = document.getElementById("days");
+
+    const tickerEl = document.getElementById("ticker");
+    const currencyEl = document.getElementById("currency");
+    const lastCloseEl = document.getElementById("last-close");
+    const predictedEl = document.getElementById("predicted");
+    const changeEl = document.getElementById("change");
+
+    const fmt = (num, ccy) => {
+      const symbol = ccy === "INR" ? "INR" : "USD";
+      return new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: symbol,
+        maximumFractionDigits: 2,
+      }).format(num);
+    };
+
+    document.querySelectorAll(".pill").forEach((pill) => {
+      pill.addEventListener("click", () => {
+        symbolEl.value = pill.dataset.symbol;
+        exchangeEl.value = pill.dataset.exchange;
+      });
+    });
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      statusEl.textContent = "Predicting...";
+      resultEl.hidden = true;
+
+      const payload = {
+        symbol: symbolEl.value,
+        exchange: exchangeEl.value,
+        period: periodEl.value,
+        days_ahead: Number(daysEl.value),
+      };
+
+      try {
+        const response = await fetch("/api/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+          throw new Error(data.detail || "Failed to predict.");
+        }
+
+        tickerEl.textContent = `${data.symbol} (${data.fetched_ticker})`;
+        currencyEl.textContent = data.currency;
+        lastCloseEl.textContent = fmt(data.last_close, data.currency);
+        predictedEl.textContent = fmt(data.predicted_close, data.currency);
+
+        const changeClass = data.change >= 0 ? "up" : "down";
+        changeEl.className = changeClass;
+        changeEl.textContent = `${fmt(data.change, data.currency)} (${data.change_pct.toFixed(2)}%)`;
+
+        resultEl.hidden = false;
+        statusEl.textContent = "Prediction completed.";
+      } catch (err) {
+        statusEl.textContent = `Error: ${err.message}`;
+      }
+    });
+  </script>
+</body>
+</html>

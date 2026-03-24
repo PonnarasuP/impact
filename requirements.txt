@@ -1,0 +1,12 @@
+streamlit>=1.32.0
+yfinance>=0.2.36
+plotly>=5.20.0
+pandas>=2.0.0
+numpy>=1.26.0
+scikit-learn>=1.4.0
+requests>=2.31.0
+
+# Optional: Prophet for time-series forecasting
+# If installation fails on Windows, you can skip it and use Linear Regression instead
+# Windows users: run `conda install -c conda-forge prophet` as an alternative
+# prophet>=1.1.5
